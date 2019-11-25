@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+    
 namespace comp110_worksheet_7
 {
 	public static class DirectoryUtils
@@ -24,8 +24,39 @@ namespace comp110_worksheet_7
 		// Return the total size, in bytes, of all the files below the given directory
 		public static long GetTotalSize(string directory)
 		{
-			throw new NotImplementedException();
+            string[] rootPaths = Directory.GetDirectories(directory);
+            return DepthSearchAllFiles(rootPaths);
 		}
+
+        /// <summary>
+        /// Searches all of the folders using the depth search stack method and then
+        /// checks all of the files in there and adds them to a long file size stored
+        /// in bytes. It then iterates until all of the files and folders have been
+        /// enumerated through.
+        /// </summary>
+        /// <param name="paths"></param>
+        /// <returns>
+        /// Returns the filesize of all of the images in bytes.
+        /// </returns>
+        private static long DepthSearchAllFiles(string[] paths)
+        {
+            long fileSize = 0;
+
+            foreach(string childPath in paths)
+            {
+                for (int i = 0; i < Directory.GetFiles(childPath).Length; i++)
+                {
+
+                    string fileDirectoryPath = Directory.GetFiles(childPath)[i];
+                    Console.WriteLine(fileDirectoryPath);
+                    fileSize += new FileInfo(fileDirectoryPath).Length;
+                }
+
+                fileSize += DepthSearchAllFiles(Directory.GetDirectories(childPath));
+            }
+
+            return fileSize;
+        }
 
 		// Return the number of files (not counting directories) below the given directory
 		public static int CountFiles(string directory)
